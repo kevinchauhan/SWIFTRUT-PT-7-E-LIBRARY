@@ -150,14 +150,14 @@ const Home = () => {
                         books.map((book, index) => (
                             <div
                                 key={book._id}
-                                className="bg-white border rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105"
+                                className="bg-white border rounded-lg shadow-md overflow-hidden flex flex-col"
                             >
                                 <img
                                     src={book.image}
                                     alt={book.title}
                                     className="w-full h-40 object-cover"
                                 />
-                                <div className="p-4">
+                                <div className="p-4 flex-grow">
                                     <h3 className="text-sm font-semibold text-gray-800">
                                         {book.title}
                                     </h3>
@@ -171,7 +171,7 @@ const Home = () => {
                                         <span className="block">Published: <span className="font-medium">{new Date(book.publicationDate).toLocaleDateString()}</span></span>
                                     </div>
                                 </div>
-                                <div className="p-3 bg-gray-100 flex justify-between items-center">
+                                <div className="p-3 bg-gray-100 flex justify-between items-center mt-auto">
                                     {book.availableCopies > 0 ? (
                                         <button
                                             onClick={() => handleBorrowBook(book._id, index)}
