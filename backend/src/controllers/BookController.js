@@ -27,11 +27,16 @@ export class BookController {
 
     async getBooks(req, res) {
         try {
-            const { title, genre, limit = 10, page = 1, sortBy = 'title', order = 'asc' } = req.query;
+            const { query, limit = 10, page = 1, sortBy = 'title', order = 'asc' } = req.query;
             const filter = {};
-            if (title) filter.title = { $regex: new RegExp(title, 'i') };
-            if (genre) filter.genre = genre;
-
+            if (query) {
+                filter.$or = [
+                    { title: { $regex: new RegExp(query, 'i') } },
+                    { genre: { $regex: new RegExp(query, 'i') } },
+                    { author: { $regex: new RegExp(query, 'i') } }
+                ];
+            }
+            console.log(filter)
             const books = await Book.find(filter)
                 .sort({ [sortBy]: order === 'desc' ? -1 : 1 })
                 .skip((page - 1) * limit)
