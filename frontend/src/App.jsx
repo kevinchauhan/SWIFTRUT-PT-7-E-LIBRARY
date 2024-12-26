@@ -7,9 +7,6 @@ import axios from 'axios';
 import useAuthStore from './store/authStore';
 import { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
-import CreateEvent from './pages/CreateEvent';
-import MyEvents from './pages/MyEvent';
-import EditEvent from './pages/EditEvent';
 import AddBook from './pages/AddBook';
 
 function App() {
