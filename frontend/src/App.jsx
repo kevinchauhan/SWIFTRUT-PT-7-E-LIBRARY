@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify';
 import CreateEvent from './pages/CreateEvent';
 import MyEvents from './pages/MyEvent';
 import EditEvent from './pages/EditEvent';
+import AddBook from './pages/AddBook';
 
 function App() {
   const { login, logout } = useAuthStore();
@@ -48,6 +49,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/add-book" element={<AddBook />} />
           </Routes>
         </main>
       </div>
