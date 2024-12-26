@@ -95,7 +95,7 @@ const Login = () => {
 
                     <button
                         type="submit"
-                        className="w-full py-3 bg-indigo-600 text-white text-lg font-semibold rounded-md hover:bg-indigo-700 transition duration-200"
+                        className="w-full py-3 bg-[#2c493e] text-white text-lg font-semibold rounded-md hover:bg-[#1e3d34] transition duration-200"
                     >
                         Login
                     </button>
@@ -103,7 +103,7 @@ const Login = () => {
                     <div className="text-center">
                         <p className="text-sm text-gray-600">
                             Don't have an account?{' '}
-                            <Link href="/signup" className="text-indigo-600 font-semibold hover:text-indigo-800">Sign Up</Link>
+                            <Link to="/signup" className="text-[#2c493e] font-semibold hover:text-[#1e3d34]">Sign Up</Link>
                         </p>
                     </div>
                 </form>
