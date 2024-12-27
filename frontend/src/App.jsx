@@ -8,6 +8,7 @@ import useAuthStore from './store/authStore';
 import { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import AddBook from './pages/AddBook';
+import MyBorrowedBooks from './pages/MyBorrowedBook';
 
 function App() {
   const { login, logout } = useAuthStore();
@@ -47,6 +48,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/add-book" element={<AddBook />} />
+            <Route path="/my-borrowed-books" element={<MyBorrowedBooks />} />
           </Routes>
         </main>
       </div>
