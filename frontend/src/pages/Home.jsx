@@ -8,39 +8,53 @@ import { FaTimes } from 'react-icons/fa';
 const Home = () => {
     const { isAuthenticated } = useAuthStore();
     const [books, setBooks] = useState([]);
+    const [borrowedBooks, setBorrowedBooks] = useState([]);
     const [filters, setFilters] = useState({
-        query: '', // Single search query
+        query: '',
         fromDate: '',
-        toDate: ''
+        toDate: '',
     });
 
     useEffect(() => {
         const fetchBooks = async () => {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_API_URL}/api/books`, {
-                    params: filters
+                    params: filters,
                 });
-                setBooks(response.data?.books);
+                setBooks(response.data?.books || []);
             } catch (error) {
                 console.error('Error fetching books:', error);
             }
         };
 
+        const fetchBorrowedBooks = async () => {
+            if (!isAuthenticated) return; // Fetch borrowed books only if logged in
+            try {
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_API_URL}/api/books/borrowed-books`, {
+                    withCredentials: true,
+                });
+                setBorrowedBooks(response.data?.books || []);
+            } catch (error) {
+                console.error('Error fetching borrowed books:', error);
+            }
+        };
+
         fetchBooks();
-    }, [filters]);
+        fetchBorrowedBooks();
+    }, [filters, isAuthenticated]);
 
     const handleFilterChange = (e) => {
         setFilters({
             ...filters,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
         });
     };
 
     const resetFilters = () => {
         setFilters({
-            query: '', // Reset the search query
+            query: '',
             fromDate: '',
-            toDate: ''
+            toDate: '',
         });
     };
 
@@ -51,13 +65,20 @@ const Home = () => {
         }
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}/api/books/${bookId}/borrow`, {}, { withCredentials: true });
+            const response = await axios.post(
+                `${import.meta.env.VITE_BACKEND_API_URL}/api/books/${bookId}/borrow`,
+                {},
+                { withCredentials: true }
+            );
 
             if (response.status === 200) {
                 toast.success('Book borrowed successfully!');
                 const updatedBooks = [...books];
                 updatedBooks[index].availableCopies -= 1;
                 setBooks(updatedBooks);
+
+                // Add the borrowed book to the borrowedBooks list
+                setBorrowedBooks((prev) => [...prev, updatedBooks[index]]);
             }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to borrow book. Please try again.');
@@ -71,17 +92,28 @@ const Home = () => {
         }
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}/api/books/${bookId}/return`, {}, { withCredentials: true });
+            const response = await axios.post(
+                `${import.meta.env.VITE_BACKEND_API_URL}/api/books/${bookId}/return`,
+                {},
+                { withCredentials: true }
+            );
 
             if (response.status === 200) {
                 toast.success('Book returned successfully!');
                 const updatedBooks = [...books];
                 updatedBooks[index].availableCopies += 1;
                 setBooks(updatedBooks);
+
+                // Remove the returned book from the borrowedBooks list
+                setBorrowedBooks((prev) => prev.filter((book) => book._id !== bookId));
             }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to return book. Please try again.');
         }
+    };
+
+    const isBookBorrowed = (bookId) => {
+        return borrowedBooks.some((borrowedBook) => borrowedBook._id === bookId);
     };
 
     return (
@@ -94,7 +126,9 @@ const Home = () => {
                 {/* Filters Section */}
                 <div className="flex flex-wrap items-center justify-start gap-4 mb-8 bg-white p-4 rounded-lg shadow-md border">
                     <div className="flex flex-col w-1/3">
-                        <label htmlFor="query" className="text-xs text-gray-500 mb-1">Search</label>
+                        <label htmlFor="query" className="text-xs text-gray-500 mb-1">
+                            Search
+                        </label>
                         <input
                             type="text"
                             id="query"
@@ -107,7 +141,9 @@ const Home = () => {
                     </div>
 
                     <div className="flex flex-col">
-                        <label htmlFor="fromDate" className="text-xs text-gray-500 mb-1">From Publication Year</label>
+                        <label htmlFor="fromDate" className="text-xs text-gray-500 mb-1">
+                            From Publication Year
+                        </label>
                         <input
                             type="date"
                             id="fromDate"
@@ -119,7 +155,9 @@ const Home = () => {
                     </div>
 
                     <div className="flex flex-col">
-                        <label htmlFor="toDate" className="text-xs text-gray-500 mb-1">To Publication Year</label>
+                        <label htmlFor="toDate" className="text-xs text-gray-500 mb-1">
+                            To Publication Year
+                        </label>
                         <input
                             type="date"
                             id="toDate"
@@ -130,7 +168,7 @@ const Home = () => {
                         />
                     </div>
 
-                    <div className='pt-4'>
+                    <div className="pt-4">
                         <button
                             onClick={resetFilters}
                             className="flex items-center justify-center bg-[#2c493e] text-white px-3 py-2 rounded-lg text-xs hover:bg-[#2c493e] transition focus:outline-none"
@@ -165,26 +203,31 @@ const Home = () => {
                                         {book.description}
                                     </p>
                                     <div className="mt-3 text-xs text-gray-600">
-                                        <span className="block">Author: <span className="font-medium">{book.author}</span></span>
-                                        <span className="block">Genre: <span className="font-medium">{book.genre}</span></span>
-                                        <span className="block">Available: <span className="font-medium">{book.availableCopies}</span></span>
-                                        <span className="block">Published: <span className="font-medium">{new Date(book.publicationDate).toLocaleDateString()}</span></span>
+                                        <span className="block">
+                                            Author: <span className="font-medium">{book.author}</span>
+                                        </span>
+                                        <span className="block">
+                                            Genre: <span className="font-medium">{book.genre}</span>
+                                        </span>
+                                        <span className="block">
+                                            Available: <span className="font-medium">{book.availableCopies}</span>
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="p-3 bg-gray-100 flex justify-between items-center mt-auto">
-                                    {book.availableCopies > 0 ? (
+                                    {isBookBorrowed(book._id) ? (
+                                        <button
+                                            onClick={() => handleReturnBook(book._id, index)}
+                                            className="bg-red-500 text-white py-1 px-3 rounded-lg text-xs hover:bg-red-600 transition"
+                                        >
+                                            Return
+                                        </button>
+                                    ) : (
                                         <button
                                             onClick={() => handleBorrowBook(book._id, index)}
                                             className="bg-[#2c493e] text-white py-1 px-3 rounded-lg text-xs hover:bg-[#2c493e] transition"
                                         >
                                             Borrow
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() => handleReturnBook(book._id, index)}
-                                            className="bg-green-600 text-white py-1 px-3 rounded-lg text-xs hover:bg-green-700 transition"
-                                        >
-                                            Return
                                         </button>
                                     )}
                                     <Link
