@@ -7,7 +7,8 @@ const bookSchema = new mongoose.Schema({
     description: { type: String, required: true },
     image: { type: String, },
     availableCopies: { type: Number, required: true },
-    borrowedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+    borrowedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });
 
 const Book = mongoose.model('Book', bookSchema);

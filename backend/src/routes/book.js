@@ -13,5 +13,6 @@ router.put('/:bookId', authenticate, bookController.editBook);
 router.delete('/:bookId', authenticate, bookController.deleteBook);
 router.post('/:bookId/borrow', authenticate, bookController.borrowBook);
 router.post('/:bookId/return', authenticate, bookController.returnBook);
+router.get('/user', authenticate, bookController.getUserCreatedBooks);
 
 export default router;

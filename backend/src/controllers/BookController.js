@@ -4,7 +4,7 @@ export class BookController {
     async createBook(req, res) {
         try {
             const { title, author, genre, description, image, availableCopies } = req.body;
-
+            const userId = req.user?.id
             if (!title || !author || !genre || !description || !image || !availableCopies) {
                 return res.status(400).json({ success: false, message: "All fields are required" });
             }
@@ -16,6 +16,7 @@ export class BookController {
                 description,
                 image,
                 availableCopies,
+                userId
             });
 
             await newBook.save();
@@ -168,5 +169,29 @@ export class BookController {
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
+
+    async getUserCreatedBooks(req, res) {
+        try {
+            // Ensure the user is authenticated
+            const userId = req.user?.id; // `req.user` should be populated by your authentication middleware
+            if (!userId) {
+                return res.status(401).json({ message: 'Unauthorized access.' });
+            }
+
+            // Fetch books created by the user
+            const books = await Book.find({ userId });
+
+            res.status(200).json({
+                success: true,
+                books,
+            });
+        } catch (error) {
+            console.error('Error fetching user-created books:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to fetch books. Please try again.',
+            });
+        }
+    };
 
 }
