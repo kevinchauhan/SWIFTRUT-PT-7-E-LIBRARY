@@ -152,4 +152,21 @@ export class BookController {
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
+
+    async getBorrowedBooks(req, res) {
+        try {
+            const userId = req.user.id;
+
+            const books = await Book.find({ borrowedBy: userId });
+
+            if (!books.length) {
+                return res.status(404).json({ success: false, message: "No borrowed books found" });
+            }
+
+            res.status(200).json({ success: true, books });
+        } catch (error) {
+            res.status(500).json({ success: false, message: "Internal server error" });
+        }
+    }
+
 }

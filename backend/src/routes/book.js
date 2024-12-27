@@ -7,6 +7,7 @@ const bookController = new BookController();
 
 router.post('/', authenticate, bookController.createBook);
 router.get('/', bookController.getBooks);
+router.get("/borrowed-books", authenticate, bookController.getBorrowedBooks);
 router.get('/:bookId', bookController.getBookById);
 router.put('/:bookId', authenticate, bookController.editBook);
 router.delete('/:bookId', authenticate, bookController.deleteBook);
