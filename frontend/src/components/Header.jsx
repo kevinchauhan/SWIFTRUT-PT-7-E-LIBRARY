@@ -63,6 +63,15 @@ const Header = () => {
                                         </li>
                                         <li>
                                             <Link
+                                                to="/my-issued-books"
+                                                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                                onClick={() => setDropdownOpen(false)}
+                                            >
+                                                My Issued Books
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link
                                                 to="/my-borrowed-books"
                                                 className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                                                 onClick={() => setDropdownOpen(false)}
